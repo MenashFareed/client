@@ -8,6 +8,8 @@ import {
 } from '@mui/material';
 import CourtCard from '../components/CourtCard.tsx';
 import { Court } from '../types/Court.ts';
+import { useAppDispatch, useAppSelector } from '../hooks/redux.ts';
+import { fetchCourts } from '../store/slices/courtsSlice.ts';
 
 // Temporary mock data until we connect to the backend
 const mockCourts: Court[] = [
@@ -25,21 +27,25 @@ const mockCourts: Court[] = [
 ];
 
 const CourtList = () => {
-  const [courts, setCourts] = useState<Court[]>([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useAppDispatch();
+  const { courts, loading, error } = useAppSelector((state) => state.courts);
 
   useEffect(() => {
-    // This will be replaced with actual API call later
-    setTimeout(() => {
-      setCourts(mockCourts);
-      setLoading(false);
-    }, 1000);
-  }, []);
+    dispatch(fetchCourts());
+  }, [dispatch]);
 
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" mt={4}>
         <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <Typography color="error">{error}</Typography>
       </Box>
     );
   }
