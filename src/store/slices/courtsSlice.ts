@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { Court } from '../../types/Court';
-import axios from 'axios';
+import api from '../../services/api.ts';
 
 interface CourtsState {
   courts: Court[];
@@ -17,8 +17,7 @@ const initialState: CourtsState = {
 export const fetchCourts = createAsyncThunk(
   'courts/fetchCourts',
   async () => {
-    // This will be updated with actual API endpoint
-    const response = await axios.get('/api/courts');
+    const response = await api.get('/courts');
     return response.data;
   }
 );
