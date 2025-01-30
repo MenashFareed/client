@@ -13,6 +13,8 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { Court } from '../types/Court';
+import { useAppDispatch } from '../hooks/redux.ts';
+import { createBooking } from '../store/slices/bookingsSlice.ts';
 
 interface BookingFormProps {
   court: Court;
@@ -21,15 +23,34 @@ interface BookingFormProps {
 }
 
 const BookingForm = ({ court, open, onClose }: BookingFormProps) => {
+  const dispatch = useAppDispatch();
   const [date, setDate] = useState<Date | null>(null);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [duration, setDuration] = useState('1');
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    // Validation and submission logic will be added later
-    console.log({ date, startTime, duration });
+    
+    if (!date || !startTime || !duration) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    try {
+      const endTime = new Date(startTime);
+      endTime.setHours(endTime.getHours() + parseInt(duration));
+
+      await dispatch(createBooking({
+        courtId: court.id,
+        startTime,
+        endTime,
+      })).unwrap();
+
+      onClose();
+    } catch (err) {
+      setError('Failed to create booking. Please try again.');
+    }
   };
 
   return (
