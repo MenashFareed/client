@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { authService } from '../../services/auth.service.ts';
 
 interface User {
   id: string;
@@ -16,6 +16,11 @@ interface AuthState {
   error: string | null;
 }
 
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
 const initialState: AuthState = {
   user: null,
   token: localStorage.getItem('token'),
@@ -25,9 +30,14 @@ const initialState: AuthState = {
 
 export const login = createAsyncThunk(
   'auth/login',
-  async (credentials: { email: string; password: string }) => {
-    const response = await axios.post('/api/auth/login', credentials);
-    return response.data;
+  async (credentials: LoginCredentials, { rejectWithValue }) => {
+    try {
+      const response = await authService.login(credentials);
+      localStorage.setItem('token', response.token);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
   }
 );
 
@@ -38,7 +48,11 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.token = null;
+      state.error = null;
       localStorage.removeItem('token');
+    },
+    clearError: (state) => {
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -51,14 +65,14 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.loading = false;
-        localStorage.setItem('token', action.payload.token);
+        state.error = null;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Login failed';
+        state.error = action.payload as string || 'Login failed';
       });
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, clearError } = authSlice.actions;
 export default authSlice.reducer; 

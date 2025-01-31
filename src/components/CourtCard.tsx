@@ -11,6 +11,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { Court } from '../types/Court';
 import BookingForm from './BookingForm.tsx';
+import { useAppSelector } from '../hooks/redux.ts';
+
 
 interface CourtCardProps {
   court: Court;
@@ -19,6 +21,7 @@ interface CourtCardProps {
 const CourtCard = ({ court }: CourtCardProps) => {
   const navigate = useNavigate();
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
+  const { token } = useAppSelector((state) => state.auth);
 
   const statusColor = {
     available: 'success',
@@ -59,7 +62,7 @@ const CourtCard = ({ court }: CourtCardProps) => {
             onClick={() => setBookingFormOpen(true)}
             disabled={court.status !== 'available'}
           >
-            Book Now
+            {token ? 'Book Now' : 'Login to Book'}
           </Button>
         </CardContent>
       </Card>

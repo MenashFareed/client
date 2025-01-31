@@ -13,11 +13,12 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { Court } from '../types/Court';
-import { useAppDispatch } from '../hooks/redux.ts';
+import { useAppDispatch, useAppSelector } from '../hooks/redux.ts';
 import { createBooking } from '../store/slices/bookingsSlice.ts';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { de } from 'date-fns/locale/de';
+import { useNavigate } from 'react-router-dom';
 
 interface BookingFormProps {
   court: Court;
@@ -27,10 +28,35 @@ interface BookingFormProps {
 
 const BookingForm = ({ court, open, onClose }: BookingFormProps) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { token } = useAppSelector((state) => state.auth);
   const [date, setDate] = useState<Date | null>(null);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [duration, setDuration] = useState('1');
   const [error, setError] = useState<string | null>(null);
+
+  // Show login prompt instead of redirecting
+  if (!token) {
+    return (
+      <Dialog open={open} onClose={onClose}>
+        <DialogTitle>Login Required</DialogTitle>
+        <DialogContent>
+          <Alert severity="info">
+            Please log in to book a court.
+          </Alert>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button 
+            variant="contained" 
+            onClick={() => navigate('/login')}
+          >
+            Login
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
