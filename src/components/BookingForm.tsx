@@ -15,6 +15,9 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { Court } from '../types/Court';
 import { useAppDispatch } from '../hooks/redux.ts';
 import { createBooking } from '../store/slices/bookingsSlice.ts';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
+import { de } from 'date-fns/locale/de';
 
 interface BookingFormProps {
   court: Court;
@@ -61,18 +64,20 @@ const BookingForm = ({ court, open, onClose }: BookingFormProps) => {
           <Stack spacing={3}>
             {error && <Alert severity="error">{error}</Alert>}
             
-            <DatePicker
-              label="Select Date"
-              value={date}
-              onChange={(newValue) => setDate(newValue)}
-              disablePast
-            />
+            <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={de}>
+              <DatePicker
+                label="Select Date"
+                value={date}
+                onChange={(newValue) => setDate(newValue)}
+                disablePast
+              />
             
-            <TimePicker
-              label="Select Start Time"
-              value={startTime}
-              onChange={(newValue) => setStartTime(newValue)}
-            />
+              <TimePicker
+                label="Select Start Time"
+                value={startTime}
+                onChange={(newValue) => setStartTime(newValue)}
+              />
+            </LocalizationProvider>
             
             <TextField
               label="Duration (hours)"
