@@ -41,8 +41,19 @@ export const authService = {
     }
   },
 
-  register: async (data: RegisterData) => {
-    const response = await api.post('/auth/register', data);
-    return response.data;
+  register: async (userData: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+  }) => {
+    try {
+      const response = await api.post('/auth/register', userData);
+      return response.data;
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Registration failed';
+      throw new Error(message);
+    }
   },
 }; 
