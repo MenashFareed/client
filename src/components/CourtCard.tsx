@@ -22,6 +22,7 @@ const CourtCard = ({ court }: CourtCardProps) => {
   const navigate = useNavigate();
   const [bookingFormOpen, setBookingFormOpen] = useState(false);
   const { token } = useAppSelector((state) => state.auth);
+  const defaultImage = '/images/court.png';
 
   const statusColor = {
     available: 'success',
@@ -35,8 +36,11 @@ const CourtCard = ({ court }: CourtCardProps) => {
         <CardMedia
           component="img"
           height="140"
-          image={court.images[0]}
+          image={court.images?.[0] || defaultImage}
           alt={court.name}
+          onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+            e.currentTarget.src = defaultImage;
+          }}
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">

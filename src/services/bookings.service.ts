@@ -8,7 +8,7 @@ export const bookingsService = {
   },
 
   getBookings: async () => {
-    const response = await api.get('/bookings');
+    const response = await api.get('/bookings/userBookings');
     return response.data;
   },
 
