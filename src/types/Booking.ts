@@ -1,9 +1,8 @@
 export interface Booking {
   id: string;
-  courtId: string;
   userId: string;
-  startTime: Date;
-  endTime: Date;
+  slotId: string;
+  totalAmount: number;
   status: 'pending' | 'confirmed' | 'cancelled';
   createdAt: Date;
   updatedAt: Date;
