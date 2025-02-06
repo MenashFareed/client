@@ -73,6 +73,10 @@ const BookingForm = ({ court, open, onClose }: BookingFormProps) => {
         totalAmount: court.hourlyRate
       })).unwrap();
 
+      // Fetch updated time slots after successful booking
+      await dispatch(fetchTimeSlots(court._id));
+      
+      setSelectedTimeSlot(null); // Reset selected slot
       onClose();
     } catch (err) {
       setError('Failed to create booking. Please try again.');
